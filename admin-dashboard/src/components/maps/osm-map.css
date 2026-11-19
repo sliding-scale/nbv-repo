@@ -1,0 +1,13 @@
+.osm-map {
+  height: 100%;
+  width: 100%;
+  z-index: 0;
+  background: #f1f5f9;
+  font-family: inherit;
+}
+
+.osm-map .leaflet-pane,
+.osm-map .leaflet-top,
+.osm-map .leaflet-bottom {
+  z-index: 1;
+}
