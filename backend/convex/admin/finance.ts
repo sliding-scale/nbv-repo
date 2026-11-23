@@ -19,7 +19,6 @@ import { mutation, query } from "../_generated/server";
 import { requireAdmin } from "../lib/auth";
 import { SPEED_LIMIT_KMH } from "../lib/monitoringConfig";
 import {
-  assertFeeNote,
   assertPeriod,
   assertSpeedLimit,
   ensureCurrentMonthCharges,
@@ -121,14 +120,10 @@ export const ensureCurrentMonth = mutation({
   },
 });
 
-/** Record a fee as paid. The method and note are stored and kept off the ledger table. */
+/** Record a fee as paid. Method and note stay empty until the receipt step asks for them. */
 export const markPaid = mutation({
-  args: {
-    id: v.id("feeCharges"),
-    paymentMethod: v.union(v.literal("cash"), v.literal("online_transfer")),
-    note: v.string(),
-  },
-  handler: async (ctx, { id, paymentMethod, note }) => {
+  args: { id: v.id("feeCharges") },
+  handler: async (ctx, { id }) => {
     await requireAdmin(ctx);
     if (!(await ctx.db.get(id))) {
       throw new ConvexError({ code: "NOT_FOUND", message: "This fee row no longer exists." });
@@ -136,8 +131,8 @@ export const markPaid = mutation({
     await ctx.db.patch("feeCharges", id, {
       status: "paid",
       paidAt: Date.now(),
-      paymentMethod,
-      note: assertFeeNote(note),
+      paymentMethod: null,
+      note: "",
     });
   },
 });

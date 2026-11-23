@@ -12,7 +12,6 @@ import Tabs from '../components/common/Tabs'
 import { inputClass } from '../components/common/inputClass'
 import FeeHistoryModal from '../components/finance/FeeHistoryModal'
 import FinanceTable from '../components/finance/FinanceTable'
-import MarkPaidModal from '../components/finance/MarkPaidModal'
 import { useParents } from '../store/ParentsContext'
 import { useStudents } from '../store/StudentsContext'
 import { useVehicles } from '../store/VehiclesContext'
@@ -36,7 +35,6 @@ export default function FinancePage() {
   const [query, setQuery] = useState('')
   const [ready, setReady] = useState(false)
   const [historyStudentId, setHistoryStudentId] = useState(null)
-  const [paying, setPaying] = useState(null)
   const [unpaying, setUnpaying] = useState(null)
 
   const started = useRef(false)
@@ -104,6 +102,14 @@ export default function FinancePage() {
     studentsLoading ||
     parentsLoading ||
     vehiclesLoading
+
+  const confirmPaid = async (row) => {
+    try {
+      await markPaid({ id: row.id })
+    } catch (err) {
+      window.alert(readMutationError(err).message)
+    }
+  }
 
   const confirmUnpaid = async () => {
     const row = unpaying
@@ -203,7 +209,7 @@ export default function FinancePage() {
                 <FinanceTable
                   rows={visible}
                   onOpenHistory={(row) => setHistoryStudentId(row.studentId)}
-                  onMarkPaid={setPaying}
+                  onMarkPaid={confirmPaid}
                   onMarkUnpaid={setUnpaying}
                 />
               )}
@@ -216,12 +222,10 @@ export default function FinancePage() {
           rows={historyRows}
           loading={historyDocs === undefined}
           onClose={() => setHistoryStudentId(null)}
-          onMarkPaid={setPaying}
+          onMarkPaid={confirmPaid}
           onMarkUnpaid={setUnpaying}
         />
       )}
-
-      {paying && <MarkPaidModal key={paying.id} row={paying} onClose={() => setPaying(null)} onConfirm={markPaid} />}
 
       <ConfirmDialog
         open={Boolean(unpaying)}
