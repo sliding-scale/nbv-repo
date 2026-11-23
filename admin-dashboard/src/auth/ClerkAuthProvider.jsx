@@ -28,12 +28,9 @@ function ClerkBridge({ children }) {
 
 export default function ClerkAuthProvider({ publishableKey, children }) {
   const navigate = useNavigate()
-  // Set only on the Vercel production site. Local development talks to Clerk directly.
-  const proxyUrl = import.meta.env.VITE_CLERK_PROXY_URL || undefined
   return (
     <ClerkProvider
       publishableKey={publishableKey}
-      proxyUrl={proxyUrl}
       // Lets Clerk navigate with React Router instead of full page reloads.
       routerPush={(to) => navigate(to)}
       routerReplace={(to) => navigate(to, { replace: true })}
