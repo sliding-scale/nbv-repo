@@ -1,4 +1,4 @@
-// Forwards https://nbv-admin.vercel.app/__clerk/* to Clerk.
+// Forwards https://nbv-admin.vercel.app/__clerk to Clerk, including the bare path.
 // vercel.app cannot use Clerk DNS, so production sign-in goes through this path.
 // CLERK_SECRET_KEY stays on the server. It is not a VITE_ variable.
 
