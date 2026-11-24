@@ -1,11 +1,25 @@
+import { copyFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
 
+// Vercel serves this for any path that is not a real file, including /login.
+function spaFallback() {
+  return {
+    name: 'spa-fallback',
+    apply: 'build',
+    writeBundle(options) {
+      if (!options.dir) return
+      copyFileSync(join(options.dir, 'index.html'), join(options.dir, '404.html'))
+    },
+  }
+}
+
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), spaFallback()],
   resolve: {
     alias: {
       // Import backend functions with: import { api } from '@backend/_generated/api'
